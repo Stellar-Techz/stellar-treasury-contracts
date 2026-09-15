@@ -1,768 +1,1167 @@
-AI Treasury Agent
+Stellar TreasuryKit
 
-An AI-powered programmable treasury built on Stellar, where AI analyzes treasury activity and Soroban smart contracts enforce secure spending rules and authorized on-chain actions.
+An open-source programmable treasury infrastructure toolkit for Stellar and Soroban.
+
+Stellar TreasuryKit provides reusable smart-contract primitives, a TypeScript SDK, permission controls, spending limits, transaction proposals, events, and developer examples for building secure treasury systems on Stellar.
+
+Instead of every Stellar application implementing its own treasury logic from scratch, TreasuryKit provides a common foundation that developers can integrate into their applications.
+
+AI provides intelligence.
+Soroban enforces rules.
+Stellar settles transactions.
 
 🚀 Overview
 
-Managing a blockchain treasury can be difficult.
+Managing blockchain treasury funds can become complicated when applications need:
 
-Businesses, startups, DAOs, organizations, and Web3 projects need to constantly monitor:
+Multiple authorized users or agents
+Spending limits
+Approved recipients
+Asset restrictions
+Transaction approvals
+Emergency controls
+Treasury activity monitoring
+On-chain event tracking
+Programmatic withdrawals
+Automated or AI-assisted treasury operations
 
-Wallet balances
-Incoming and outgoing payments
-Treasury reserves
-Spending patterns
-Suspicious transactions
-Recurring payments
-Operational expenses
+Stellar TreasuryKit aims to make these capabilities reusable.
 
-Most of this is still done manually.
+The project provides a Soroban-based treasury contract together with a developer-friendly TypeScript SDK and practical examples.
 
-AI Treasury Agent provides an intelligent treasury assistant that monitors on-chain activity, analyzes financial behavior, detects unusual activity, recommends actions, and can execute authorized treasury operations.
+Developers can use TreasuryKit to build:
 
-The key principle is:
-
-AI provides the intelligence.
-
-Soroban smart contracts enforce the rules.
-
-Stellar provides the fast and efficient settlement layer.
-
+DAOs
+Creator payment systems
+Grant distribution platforms
+Payroll systems
+Community treasuries
+AI-powered treasury agents
+Automated payment systems
+DeFi applications
+Startup/company treasuries
+Multi-user financial applications
 🎯 Problem
 
-Managing a treasury manually creates several problems.
+Many applications that manage funds need similar treasury functionality.
 
-1. Constant monitoring
+For example, an application may need to answer:
 
-Treasury owners have to repeatedly check their wallets and transactions.
+Who is allowed to withdraw funds?
 
-2. Difficult transaction analysis
+How much can an authorized agent spend?
 
-A treasury can have many transactions, making it difficult to understand where money is going.
+Which addresses can receive funds?
 
-3. Unusual activity can be missed
+Which assets can the treasury hold?
 
-A large or unexpected payment may not be noticed quickly.
+Should a large transaction require approval?
 
-4. Manual treasury operations
+How can the treasury be paused during an emergency?
 
-Recurring payments and reserve management require someone to manually perform transactions.
+How can off-chain applications monitor treasury activity?
 
-5. AI needs controlled access
+Developers often end up rebuilding these mechanisms independently.
 
-Giving an AI unrestricted access to treasury funds creates a serious security risk.
+This can result in:
+
+duplicated code
+inconsistent permission systems
+weak spending controls
+difficult auditing
+poor interoperability
+more security-sensitive code
+
+TreasuryKit provides reusable primitives for these problems.
 
 💡 Solution
 
-AI Treasury Agent combines:
+Stellar TreasuryKit introduces a programmable treasury layer for Stellar.
 
-AI + Soroban Smart Contracts + Stellar
+                ┌───────────────────────┐
+                │      Application      │
+                │                       │
+                │ DAO / AI Agent /      │
+                │ Payments / Grants     │
+                └───────────┬───────────┘
+                            │
+                            ▼
+                ┌───────────────────────┐
+                │   TreasuryKit SDK     │
+                │      TypeScript       │
+                └───────────┬───────────┘
+                            │
+                            ▼
+                ┌───────────────────────┐
+                │ Soroban Treasury     │
+                │       Contract        │
+                │                       │
+                │ Permissions           │
+                │ Spending Limits       │
+                │ Asset Rules            │
+                │ Recipients             │
+                │ Proposals              │
+                │ Emergency Pause        │
+                └───────────┬───────────┘
+                            │
+                            ▼
+                ┌───────────────────────┐
+                │       Stellar         │
+                │       Network         │
+                └───────────────────────┘
 
-to create a programmable treasury.
+The key design principle is:
 
-The AI can:
+Applications decide what they want to do. TreasuryKit determines whether they are allowed to do it.
 
-Monitor treasury balances
-Analyze transactions
-Detect unusual activity
-Generate treasury reports
-Recommend actions
-Evaluate treasury rules
-Prepare transactions
-Execute authorized low-risk operations
+✨ Core Features
+🏦 Programmable Treasury
 
-However, the AI does not have unlimited access to the treasury.
+Create an on-chain treasury controlled by configurable rules.
 
-The Soroban smart contract enforces:
+Supported capabilities include:
 
+Treasury initialization
+Deposits
+Withdrawals
+Treasury ownership
+Authorized agents
 Spending limits
 Daily limits
-Authorized agents
-Approved recipients
-Allowed assets
-Treasury rules
+Recipient allowlists
+Asset restrictions
 Emergency pause
-Owner permissions
-🧠 How It Works
-                    USER
-                     │
-                     ▼
-                Web Dashboard
-                     │
-          ┌──────────┴──────────┐
-          │                     │
-          ▼                     ▼
-       AI Agent              Stellar Wallet
-          │                     │
-          │                     │
-          ▼                     │
-   Analyze & Decide              │
-          │                     │
-          ▼                     │
-    Create Action                │
-          │                     │
-          └──────────┬──────────┘
-                     ▼
-             Soroban Contract
-                     │
-          ┌──────────┼──────────┐
-          │          │          │
-          ▼          ▼          ▼
-       Limits     Permissions  Rules
-          │          │          │
-          └──────────┼──────────┘
-                     ▼
-                  Stellar
-                     │
-                     ▼
-                Transaction
-🔐 Core Security Model
+Transaction proposals
+Approval workflows
+🔐 Permission Management
 
-The most important principle is:
+TreasuryKit uses role-based permissions.
 
-The AI never receives unrestricted control over the treasury.
+Owner
 
-The treasury owner defines what the AI is allowed to do.
+The owner has full administrative control.
+
+Possible responsibilities:
+
+Add/remove agents
+Configure spending limits
+Add/remove recipients
+Configure supported assets
+Pause/unpause treasury
+Transfer ownership
+Approve administrative changes
+Agent
+
+An agent receives restricted permissions.
 
 For example:
 
-Agent Permissions
+Agent
+ ├── Can request withdrawal
+ ├── Can execute approved transactions
+ ├── Cannot change owner
+ ├── Cannot modify security rules
+ └── Cannot exceed spending limits
 
-Maximum transaction: $500
+This makes it possible for an application or AI agent to interact with a treasury without receiving unrestricted control.
 
-Daily spending limit: $2,000
+Soroban provides host-managed authorization primitives that TreasuryKit can build upon rather than creating an entirely separate authentication mechanism.
 
-Allowed asset: USDC
+💰 Spending Limits
 
-Approved recipient:
-GABC...
+Treasury owners can configure limits for authorized agents.
 
-Agent:
-GXYZ...
+Example:
 
-If the AI attempts to transfer more than the configured limit, the Soroban contract rejects the operation.
-
-AI requests $10,000
-        │
-        ▼
-Soroban Contract
-        │
-        ▼
-Maximum = $500
-        │
-        ▼
-       ❌
-     REJECT
-
-The smart contract therefore becomes the security boundary between the AI and the treasury.
-
-⭐ Core Features
-1. Stellar Wallet Connection
-
-Users connect a Stellar-compatible wallet.
-
-The application can display:
-
-XLM balance
-USDC balance
-Other supported Stellar assets
-Treasury value
-Transaction history
-Treasury activity
-2. Programmable Treasury Vault
-
-Users can deposit supported Stellar assets into the treasury contract.
-
-For example:
-
-Treasury
-
-XLM      $2,000
-USDC    $10,000
-EURC     $5,000
-----------------
-Total   $17,000
-
-The Soroban contract manages the treasury according to the owner's configured policies.
-
-3. AI Treasury Agent
-
-The AI analyzes treasury activity.
-
-Users can ask:
-
-"How is my treasury doing?"
-
-"Show me unusual transactions."
-
-"How much did we spend this month?"
-
-"What are our biggest expenses?"
-
-"What should I do with my excess funds?"
-
-The AI analyzes available treasury data and responds with useful insights.
-
-4. Transaction Monitoring
-
-The backend monitors Stellar transactions associated with the treasury.
-
-For example:
-
-Incoming
-+ 2,000 USDC
-
-Outgoing
-- 400 USDC
-
-Outgoing
-- 7,500 USDC
-
-The AI can identify that the 7,500 USDC payment is significantly larger than normal treasury activity.
-
-5. AI Anomaly Detection
-
-The AI analyzes transaction patterns.
-
-For example:
-
-Normal transactions:
-
+Maximum transaction:
 100 USDC
-250 USDC
-400 USDC
-300 USDC
 
-New transaction:
+Daily spending limit:
+500 USDC
 
-8,000 USDC
+Approved recipients:
+- Payroll wallet
+- Operations wallet
+- Grant wallet
 
-The agent can report:
+An agent attempting:
 
-⚠️ An unusual 8,000 USDC transaction was detected. This is significantly larger than your recent transaction pattern.
+1,000 USDC
 
-The system does not automatically claim that the transaction is fraudulent.
+would be rejected by the treasury contract.
 
-It simply flags the activity for review.
+The important security principle is:
 
-6. Treasury Rules
+The agent cannot bypass the contract's rules.
 
-Treasury owners can define programmable rules.
+👥 Recipient Allowlist
 
-Example:
-
-IF
-
-Treasury balance < 2,000 USDC
-
-THEN
-
-Notify treasury owner
-
-Another:
-
-IF
-
-Transaction > 1,000 USDC
-
-THEN
-
-Require manual approval
-
-Another:
-
-EVERY FRIDAY
-
-Transfer 100 USDC
-
-TO
-
-Approved reserve wallet
-
-These rules can be enforced by the Soroban contract.
-
-🤖 AI Agent Execution Modes
-
-The application can support three levels of automation.
-
-Mode 1 — Recommend
-
-The AI only recommends an action.
-
-AI
- ↓
-Recommendation
- ↓
-User decides
+Treasury owners can define addresses that are allowed to receive funds.
 
 Example:
 
-"I recommend moving 500 USDC to your reserve wallet."
+Approved Recipients
 
-Mode 2 — Approval Required
+Payroll      → G...
+Operations   → G...
+Grants       → G...
+Marketing    → G...
 
-The AI prepares the transaction.
+A transaction directed to an unauthorized address can be rejected by the contract.
 
-AI
- ↓
-Prepare transaction
- ↓
-User approves
- ↓
-Soroban Contract
- ↓
-Stellar
+🪙 Asset Restrictions
 
-This is useful for larger or sensitive transactions.
+TreasuryKit can support configurable asset policies.
 
-Mode 3 — Automated
+For example:
 
-The AI can execute predefined low-risk actions.
+Allowed Assets
 
-AI
- ↓
-Check rule
- ↓
-Check permissions
- ↓
-Check limits
- ↓
-Soroban Contract
- ↓
-Execute
+USDC
+XLM
+EURC
 
-Example:
+The treasury can reject unsupported assets according to its configured policy.
 
-Automatically transfer 100 USDC to the approved reserve wallet every Friday.
+This allows applications to establish clearer treasury rules.
 
-🛡️ Soroban Smart Contract Security
+📝 Transaction Proposals
 
-The Soroban treasury contract should enforce several controls.
+TreasuryKit can support a proposal-based transaction flow.
 
-Agent Authorization
+                    ┌──────────────┐
+                    │   Proposal   │
+                    └──────┬───────┘
+                           │
+                           ▼
+                    ┌──────────────┐
+                    │   Validate   │
+                    └──────┬───────┘
+                           │
+                           ▼
+                    ┌──────────────┐
+                    │   Approval   │
+                    └──────┬───────┘
+                           │
+                           ▼
+                    ┌──────────────┐
+                    │   Execute    │
+                    └──────┬───────┘
+                           │
+                           ▼
+                    ┌──────────────┐
+                    │   Stellar    │
+                    └──────────────┘
 
-Only an authorized AI agent can request automated actions.
+This enables applications to implement approval workflows before funds move.
 
-Transaction Limits
+🤖 AI Agent Integration
 
-The maximum amount that can be transferred in one transaction.
+AI is not required to use TreasuryKit.
 
-Daily Limits
+Instead, AI can be an optional consumer of the toolkit.
 
-The maximum amount the agent can move during a defined period.
+For example:
 
-Asset Allowlist
-
-Only supported Stellar assets can be transferred.
-
-Recipient Allowlist
-
-The AI can only send funds to approved addresses.
-
-Emergency Pause
-
-The treasury owner can stop automated operations.
-
-Owner Controls
-
-Only authorized users can change critical treasury settings.
-
-🧩 Example
-
-Imagine a company has:
-
-20,000 USDC
-
-inside its Stellar treasury.
-
-The owner configures:
-
-Transaction limit: 500 USDC
-
-Daily limit: 2,000 USDC
-
-Approved reserve wallet:
-GABC...
-
-Authorized AI agent:
-GXYZ...
-
-The AI notices that the treasury has excess operating funds.
-
-It recommends:
-
-"Move 500 USDC to the reserve wallet."
-
-The Soroban contract checks:
-
-Agent authorized?       ✅
-
-Amount <= 500 USDC?     ✅
-
-Recipient approved?     ✅
-
-Daily limit available?  ✅
-
-Asset allowed?          ✅
-
-The transaction is then executed on Stellar.
-
-🔥 Why Soroban Is Important
-
-The smart contract is not just there to make the project "Web3."
-
-It provides the actual treasury security model.
-
-Instead of trusting the AI:
-
-AI → Wallet → Money
-
-we use:
-
-AI
+User
  │
  ▼
-Soroban Contract
+AI Treasury Agent
  │
- ├── Is the agent authorized?
- ├── Is the amount allowed?
- ├── Is the recipient approved?
- ├── Is the asset allowed?
- └── Is the daily limit available?
- │
- ▼
-Stellar
+ ├── Analyze treasury
+ ├── Detect unusual activity
+ ├── Recommend transaction
+ └── Create proposal
+          │
+          ▼
+     TreasuryKit
+          │
+          ├── Check permissions
+          ├── Check spending limit
+          ├── Check recipient
+          └── Check asset
+                    │
+                    ▼
+                 Stellar
 
-This means the AI operates within rules enforced on-chain.
+This separation is important.
 
-🏗️ System Architecture
-┌──────────────────────────────────────┐
-│             Frontend                 │
-│              Next.js                 │
-└──────────────────┬───────────────────┘
-                   │
-                   ▼
-┌──────────────────────────────────────┐
-│             Backend                  │
-│              NestJS                  │
-├──────────────────────────────────────┤
-│                                      │
-│  AI Agent Service                    │
-│  Treasury Service                    │
-│  Transaction Monitor                 │
-│  Rule Engine                         │
-│  Analytics Service                   │
-│                                      │
-└───────────────┬──────────────────────┘
-                │
-       ┌────────┴────────┐
-       │                 │
-       ▼                 ▼
- PostgreSQL           AI Provider
-       │
-       │
-       ▼
-┌──────────────────────────────────────┐
-│              Stellar                 │
-│                                      │
-│          Soroban Contract             │
-│                                      │
-│        TreasuryVault Contract         │
-└──────────────────────────────────────┘
-🛠️ Technology Stack
-Frontend
-Next.js
-TypeScript
-Tailwind CSS
-Stellar Wallet Kit
-Stellar SDK
-Backend
-NestJS
-TypeScript
-Prisma
-PostgreSQL
-Redis
-AI
-LLM API
-AI Agent Service
-Rule Evaluation Engine
-Blockchain
-Stellar
-Soroban
-Rust
-Stellar SDK
-Smart Contract
-TreasuryVault
+The AI should not directly control treasury funds.
 
-Written in:
+Instead:
 
-Rust
+AI recommends or requests an action. TreasuryKit enforces the rules.
 
-and deployed to:
+This makes TreasuryKit useful for AI-powered applications without making the entire infrastructure dependent on a particular AI provider.
 
-Soroban
-📂 Project Structure
-ai-treasury-agent-stellar/
-│
-├── apps/
-│   │
-│   ├── web/
-│   │   ├── app/
-│   │   │   ├── dashboard/
-│   │   │   ├── treasury/
-│   │   │   ├── transactions/
-│   │   │   ├── rules/
-│   │   │   ├── agent/
-│   │   │   └── settings/
-│   │   │
-│   │   ├── components/
-│   │   │   ├── treasury/
-│   │   │   ├── agent/
-│   │   │   ├── transactions/
-│   │   │   └── wallet/
-│   │   │
-│   │   ├── lib/
-│   │   │   ├── stellar/
-│   │   │   └── api/
-│   │   │
-│   │   └── package.json
-│   │
-│   └── api/
-│       ├── src/
-│       │   │
-│       │   ├── auth/
-│       │   │
-│       │   ├── users/
-│       │   │
-│       │   ├── treasury/
-│       │   │
-│       │   ├── transactions/
-│       │   │
-│       │   ├── agent/
-│       │   │   ├── agent.service.ts
-│       │   │   ├── agent.controller.ts
-│       │   │   ├── agent.module.ts
-│       │   │   └── prompts/
-│       │   │
-│       │   ├── rules/
-│       │   │   ├── rules.service.ts
-│       │   │   ├── rules.controller.ts
-│       │   │   └── rules.engine.ts
-│       │   │
-│       │   ├── monitoring/
-│       │   │
-│       │   ├── stellar/
-│       │   │   ├── stellar.service.ts
-│       │   │   ├── soroban.service.ts
-│       │   │   └── transaction.service.ts
-│       │   │
-│       │   ├── notifications/
-│       │   │
-│       │   ├── prisma/
-│       │   │
-│       │   └── main.ts
-│       │
-│       └── package.json
+📡 On-Chain Events
+
+TreasuryKit exposes standardized contract events for important treasury activity.
+
+Example events:
+
+TreasuryCreated
+Deposit
+Withdrawal
+AgentAdded
+AgentRemoved
+LimitUpdated
+RecipientAdded
+RecipientRemoved
+ProposalCreated
+ProposalApproved
+ProposalExecuted
+TreasuryPaused
+TreasuryUnpaused
+
+Off-chain applications can consume these events to build:
+
+dashboards
+notifications
+analytics
+accounting systems
+monitoring services
+AI monitoring agents
+
+Stellar supports contract events that off-chain applications can monitor, making event-driven treasury infrastructure a natural fit for the ecosystem.
+
+🧩 TypeScript SDK
+
+TreasuryKit will provide a TypeScript SDK to simplify interaction with the Soroban contracts.
+
+Example:
+
+import { TreasuryClient } from "@stellar-treasury-kit/sdk";
+
+const treasury = new TreasuryClient({
+  contractId: "CONTRACT_ID",
+  rpcUrl: "SOROBAN_RPC_URL",
+  network: "testnet",
+});
+Deposit
+await treasury.deposit({
+  asset: "USDC",
+  amount: "100",
+});
+Withdraw
+await treasury.withdraw({
+  asset: "USDC",
+  amount: "50",
+  recipient: "G...",
+});
+Add Agent
+await treasury.addAgent({
+  address: "G...",
+});
+Configure Spending Limit
+await treasury.setSpendingLimit({
+  agent: "G...",
+  asset: "USDC",
+  amount: "500",
+});
+Add Recipient
+await treasury.addRecipient({
+  address: "G...",
+});
+Pause Treasury
+await treasury.pause();
+
+The SDK is intended to hide repetitive contract interaction details while keeping the underlying Soroban functionality accessible.
+
+🏗️ Architecture
+                    Stellar TreasuryKit
+                           │
+          ┌────────────────┼────────────────┐
+          │                │                │
+          ▼                ▼                ▼
+     Soroban          TypeScript        Examples
+     Contracts           SDK              Apps
+          │                │                │
+          │                │                │
+          ▼                ▼                ▼
+     TreasuryVault    TreasuryClient    AI Agent
+          │                               DAO
+          │                               Grants
+          │                               Payments
+          │
+          ▼
+       Stellar
+📁 Complete Project Structure
+stellar-treasury-kit/
 │
 ├── contracts/
 │   │
-│   └── treasury-vault/
+│   └── treasury/
+│       │
 │       ├── src/
 │       │   ├── lib.rs
 │       │   ├── contract.rs
 │       │   ├── storage.rs
 │       │   ├── errors.rs
-│       │   └── types.rs
+│       │   ├── events.rs
+│       │   ├── types.rs
+│       │   └── access.rs
 │       │
 │       ├── tests/
-│       │   └── treasury_test.rs
+│       │   ├── treasury_test.rs
+│       │   ├── permissions_test.rs
+│       │   ├── limits_test.rs
+│       │   ├── recipients_test.rs
+│       │   ├── assets_test.rs
+│       │   ├── proposals_test.rs
+│       │   ├── pause_test.rs
+│       │   └── security_test.rs
 │       │
 │       ├── Cargo.toml
-│       └── README.md
+│       └── Makefile
 │
-├── packages/
-│   ├── shared/
-│   ├── types/
-│   └── config/
+├── sdk/
+│   │
+│   ├── src/
+│   │   ├── client.ts
+│   │   ├── treasury.ts
+│   │   ├── transactions.ts
+│   │   ├── proposals.ts
+│   │   ├── permissions.ts
+│   │   ├── events.ts
+│   │   ├── assets.ts
+│   │   ├── errors.ts
+│   │   ├── types.ts
+│   │   └── index.ts
+│   │
+│   ├── tests/
+│   │   ├── client.test.ts
+│   │   ├── treasury.test.ts
+│   │   ├── permissions.test.ts
+│   │   └── proposals.test.ts
+│   │
+│   ├── package.json
+│   ├── tsconfig.json
+│   └── README.md
+│
+├── examples/
+│   │
+│   ├── basic-treasury/
+│   │   ├── README.md
+│   │   └── src/
+│   │
+│   ├── ai-agent/
+│   │   ├── README.md
+│   │   └── src/
+│   │
+│   ├── dao-treasury/
+│   │   ├── README.md
+│   │   └── src/
+│   │
+│   ├── recurring-payments/
+│   │   ├── README.md
+│   │   └── src/
+│   │
+│   └── grant-distribution/
+│       ├── README.md
+│       └── src/
 │
 ├── scripts/
-│   ├── deploy-contract.ts
-│   └── initialize-treasury.ts
+│   ├── build.ts
+│   ├── deploy.ts
+│   ├── initialize.ts
+│   └── upgrade.ts
 │
 ├── docs/
+│   │
+│   ├── getting-started.md
 │   ├── architecture.md
-│   ├── soroban-contract.md
-│   ├── agent.md
-│   └── security.md
+│   ├── contract-api.md
+│   ├── sdk.md
+│   ├── permissions.md
+│   ├── spending-limits.md
+│   ├── proposals.md
+│   ├── events.md
+│   ├── security.md
+│   ├── deployment.md
+│   ├── testing.md
+│   └── contributing.md
+│
+├── .github/
+│   │
+│   ├── workflows/
+│   │   ├── test.yml
+│   │   ├── contract.yml
+│   │   └── release.yml
+│   │
+│   ├── ISSUE_TEMPLATE/
+│   │   ├── bug_report.md
+│   │   ├── feature_request.md
+│   │   └── security_issue.md
+│   │
+│   └── PULL_REQUEST_TEMPLATE.md
 │
 ├── .env.example
-├── docker-compose.yml
+├── .gitignore
+├── Cargo.toml
+├── Cargo.lock
 ├── package.json
-└── README.md
-🔄 Example Transaction Flow
-1. User connects Stellar wallet
-             ↓
-2. User creates treasury
-             ↓
-3. User deposits USDC
-             ↓
-4. Soroban contract holds/manages treasury
-             ↓
-5. Backend monitors treasury
-             ↓
-6. AI analyzes activity
-             ↓
-7. AI identifies an opportunity
-             ↓
-8. AI creates recommendation
-             ↓
-9. User approves OR automation rule applies
-             ↓
-10. Soroban contract validates request
-             ↓
-11. Stellar executes transaction
-             ↓
-12. Transaction is recorded
-             ↓
-13. AI updates treasury analysis
-🧪 Example AI Interaction
-User
+├── pnpm-workspace.yaml
+├── LICENSE
+├── README.md
+├── CONTRIBUTING.md
+├── SECURITY.md
+└── CHANGELOG.md
 
-How is my treasury doing?
+The contract layout follows the general Rust workspace approach used in Stellar's Soroban tooling, while separating the reusable SDK, examples, documentation, and deployment tooling.
 
-AI
+🔧 Technology Stack
+Smart Contracts
+Rust
+Soroban SDK
+WebAssembly
+Stellar Network
 
-Your treasury currently holds approximately 17,000 USDC. Your recent spending is within normal levels, but your reserve balance is below the target you configured.
+Soroban smart contracts are currently written in Rust and compiled to WebAssembly for deployment.
 
-User
+SDK
+TypeScript
+Stellar SDK
+Soroban RPC
+Node.js
+Testing
+Rust unit tests
+Soroban local testing
+TypeScript tests
+Integration tests
+Developer Tooling
+Stellar CLI
+Cargo
+Node.js
+pnpm/npm
+GitHub Actions
+🔒 Security Model
 
-Show me unusual transactions.
+Security is a core part of TreasuryKit.
 
-AI
+The contract should enforce rules on-chain, rather than trusting an off-chain API.
 
-I found one transaction that requires attention. A 5,000 USDC outgoing transaction is significantly larger than your recent average of 350 USDC.
+Example
 
-User
+Suppose an AI agent requests:
 
-What should I do?
+Transfer:
+5,000 USDC
 
-AI
+Recipient:
+GXYZ...
 
-I recommend reviewing the transaction before allowing additional automated payments.
+The contract checks:
 
-User
+Is agent authorized?
+        │
+        ├── No → Reject
+        │
+        ▼
+Is asset allowed?
+        │
+        ├── No → Reject
+        │
+        ▼
+Is recipient approved?
+        │
+        ├── No → Reject
+        │
+        ▼
+Is amount within limit?
+        │
+        ├── No → Reject
+        │
+        ▼
+Does treasury have enough funds?
+        │
+        ├── No → Reject
+        │
+        ▼
+      Execute
 
-Move 200 USDC to my reserve wallet.
+This creates a security boundary between applications and treasury funds.
 
-AI
+🛡️ Emergency Controls
 
-The transaction is within your configured 500 USDC limit and the destination is an approved Stellar address.
-
-Approve Transaction
-
-📊 Treasury Health Score
-
-An optional feature is an AI-generated treasury health score.
+Treasury owners should be able to pause sensitive treasury operations.
 
 Example:
 
-TREASURY HEALTH
+Normal Mode
+     │
+     ▼
+Treasury Operations
+     │
+     ▼
+Suspicious Activity
+     │
+     ▼
+Pause Treasury
+     │
+     ▼
+Investigate
+     │
+     ▼
+Unpause
 
-        87 / 100
+The pause mechanism should be carefully scoped so that emergency controls cannot accidentally create a permanent lockout.
 
-✓ Healthy liquidity
-✓ Normal spending
-✓ Good reserve level
-⚠ High asset concentration
+🧪 Testing Strategy
 
-The AI explains the score:
+TreasuryKit should prioritize negative/security tests rather than only testing successful transactions.
 
-Your treasury is healthy overall. However, 72% of your treasury is concentrated in one asset. Consider maintaining a more diversified reserve.
+Contract tests
+✓ Initialize treasury
+✓ Deposit funds
+✓ Withdraw funds
+✓ Add agent
+✓ Remove agent
+✓ Configure limit
+✓ Reject excessive transaction
+✓ Add recipient
+✓ Remove recipient
+✓ Reject unauthorized recipient
+✓ Add supported asset
+✓ Reject unsupported asset
+✓ Create proposal
+✓ Approve proposal
+✓ Execute proposal
+✓ Reject unauthorized execution
+✓ Pause treasury
+✓ Reject restricted action while paused
+✓ Unpause treasury
+✓ Transfer ownership
 
-The score is intended as an informational tool, not financial advice.
+Authorization behavior should be explicitly tested because Soroban provides authorization mechanisms that can be exercised and mocked in contract tests.
 
-🌍 Why Stellar?
+🚀 Getting Started
+Prerequisites
 
-Stellar is particularly suitable for treasury and payment applications because the network is designed around efficient digital-asset transfers and payments.
+Install:
 
-For this project, Stellar provides:
+Rust
+Cargo
+Stellar CLI
+Node.js
+npm/pnpm
 
-Fast settlement
-Low-cost transactions
-Stablecoin payments
-Native asset infrastructure
-Soroban smart contracts
-Programmable on-chain treasury controls
+Check your installation:
 
-The combination allows us to build a treasury system where AI can operate financial workflows while Soroban enforces the rules.
+rustc --version
+cargo --version
+stellar --version
+node --version
+Clone Repository
+git clone https://github.com/YOUR_USERNAME/stellar-treasury-kit.git
 
-🎯 What Makes This Different?
+cd stellar-treasury-kit
+Build Contracts
+stellar contract build
+Run Contract Tests
+cargo test
+Install SDK
+cd sdk
 
-A normal AI financial assistant looks like:
+npm install
+Build SDK
+npm run build
+🌐 Network Support
 
-User
- ↓
+TreasuryKit should support:
+
+Development
+     │
+     ▼
+Local Testing
+     │
+     ▼
+Stellar Testnet
+     │
+     ▼
+Stellar Mainnet
+
+Development should begin on Testnet before any production deployment.
+
+Stellar's documentation also recommends beginning smart-contract development and testing on Testnet.
+
+📚 Documentation
+
+Documentation will be organized into the following areas:
+
+Documentation	Purpose
+Getting Started	Install and run TreasuryKit
+Architecture	Understand the system
+Contract API	Soroban contract functions
+SDK	TypeScript integration
+Permissions	Roles and authorization
+Spending Limits	Treasury spending controls
+Proposals	Approval workflow
+Events	Monitoring treasury activity
+Security	Security model and considerations
+Deployment	Testnet/Mainnet deployment
+Testing	Contract and SDK testing
+Contributing	Contributor guide
+🧑‍💻 Example Use Cases
+1. AI Treasury Agent
+
+An AI agent monitors treasury activity and proposes transactions.
+
 AI
- ↓
-Answer
-
-A normal crypto wallet looks like:
-
-User
- ↓
-Wallet
- ↓
-Transaction
-
-AI Treasury Agent combines both:
-
-User
- ↓
-AI Treasury Agent
- ↓
-Analyze
- ↓
-Recommend / Automate
- ↓
-Soroban Smart Contract
- ↓
-Validate Permissions
- ↓
+ │
+ ├── Analyze
+ ├── Detect
+ ├── Recommend
+ │
+ ▼
+TreasuryKit
+ │
+ ├── Validate
+ ├── Authorize
+ └── Enforce Limits
+ │
+ ▼
 Stellar
- ↓
-Execute
+2. DAO Treasury
 
-The AI is therefore connected to real programmable financial infrastructure.
+A DAO can use TreasuryKit to manage community funds.
 
-Future Development
+DAO Members
+     │
+     ▼
+Governance
+     │
+     ▼
+Treasury Proposal
+     │
+     ▼
+Approval
+     │
+     ▼
+TreasuryKit
+     │
+     ▼
+Stellar
+3. Grant Distribution
 
-Future versions could support:
+Organizations can distribute grants using predefined treasury rules.
 
-Multi-signature treasury management
-DAO treasury management
-Business payroll
+Grant Pool
+    │
+    ▼
+TreasuryKit
+    │
+    ├── Recipient verification
+    ├── Spending rules
+    └── Distribution
+           │
+           ▼
+       Recipients
+4. Recurring Payments
+
+Applications can build recurring payment workflows on top of the treasury infrastructure.
+
+Examples:
+
+Payroll
+Contributor payments
+Creator payments
+Subscription payouts
+Community rewards
+🔌 Extensibility
+
+TreasuryKit is designed as infrastructure rather than a single application.
+
+Applications can build additional services around the core contract.
+
+                 TreasuryKit
+                      │
+       ┌──────────────┼──────────────┐
+       │              │              │
+       ▼              ▼              ▼
+    AI Agent         DAO         Payments
+       │              │              │
+       ▼              ▼              ▼
+   Monitoring      Governance     Payroll
+
+The core treasury contract remains focused on secure fund management while applications provide domain-specific logic.
+
+🗺️ Roadmap
+Phase 1 — Core Treasury
+
+Treasury initialization
+
+Deposit functionality
+
+Withdrawal functionality
+
+Owner permissions
+
+Agent permissions
+
+Basic events
+
+Unit tests
+
+Phase 2 — Security Controls
+
+Spending limits
+
+Daily limits
+
+Recipient allowlist
+
+Asset restrictions
+
+Emergency pause
+
+Ownership management
+
+Security-focused tests
+
+Phase 3 — Proposal System
+
+Create proposal
+
+Proposal validation
+
+Approval workflow
+
+Proposal execution
+
+Proposal expiration
+
+Proposal events
+
+Phase 4 — TypeScript SDK
+
+TreasuryClient
+
+Transaction helpers
+
+Permission helpers
+
+Proposal helpers
+
+Event utilities
+
+Error handling
+
+SDK documentation
+
+Phase 5 — Examples
+
+Basic treasury
+
+AI treasury agent
+
+DAO treasury
+
 Recurring payments
-Multi-wallet treasury
-Telegram/Discord notifications
-Advanced treasury risk scoring
-Treasury forecasting
-Automated invoice payments
-AI-generated financial reports
-Cross-border business payments
-Multi-asset treasury management
-DeFi strategy recommendations
-⚠️ Security
 
-The system follows the principle of least privilege.
+Grant distribution
 
-The AI agent should never receive unrestricted control over treasury funds.
+🔮 Future Expansion
 
-Automated actions should always be constrained by Soroban smart-contract permissions and spending limits.
+TreasuryKit is intentionally designed so additional treasury capabilities can be added without changing its core purpose.
 
-The contract should be thoroughly tested and audited before handling significant real funds.
+1. Multi-Signature Treasury
 
-For hackathon purposes, the application should initially use Stellar testnet assets.
+Support multiple administrators for sensitive operations.
+
+Example:
+
+Treasury
+   │
+   ├── Owner A
+   ├── Owner B
+   └── Owner C
+
+2 of 3 approvals required
+
+This would make TreasuryKit more suitable for organizations and DAOs.
+
+2. Advanced Role-Based Permissions
+
+Expand the permission system beyond Owner and Agent.
+
+Potential roles:
+
+OWNER
+ADMIN
+OPERATOR
+AGENT
+AUDITOR
+VIEWER
+
+Different roles could have different capabilities.
+
+3. AI Risk Monitoring
+
+Add optional AI-powered monitoring services.
+
+The monitoring system could analyze:
+
+transaction frequency
+transaction size
+unusual recipients
+unusual asset movements
+spending patterns
+treasury balance changes
+
+The AI would not directly control the treasury.
+
+Instead:
+
+Blockchain Activity
+        │
+        ▼
+Monitoring Engine
+        │
+        ▼
+Risk Analysis
+        │
+        ▼
+Alert / Recommendation
+4. Treasury Health Score
+
+Applications could calculate a treasury health score based on configurable metrics.
+
+Example:
+
+Treasury Health
+
+Liquidity       ████████░░ 80%
+Spending Risk   ██████░░░░ 60%
+Diversification ███████░░░ 70%
+Activity        █████████░ 90%
+
+Overall Score: 75/100
+
+This would remain an off-chain analytics layer rather than being required by the core contract.
+
+5. Recurring Payment Engine
+
+A future service could provide reusable payment scheduling.
+
+Example:
+
+Every month
+      │
+      ▼
+Check treasury rules
+      │
+      ▼
+Check available balance
+      │
+      ▼
+Execute authorized payment
+      │
+      ▼
+Emit event
+
+Possible use cases:
+
+Payroll
+Creator payouts
+Contributor rewards
+Subscription payments
+Grants
+6. Treasury Analytics
+
+Build a standard analytics layer around TreasuryKit events.
+
+Potential metrics:
+
+Total deposits
+Total withdrawals
+Current balance
+Transaction volume
+Agent activity
+Spending by recipient
+Spending by asset
+Failed transactions
+7. Notification Integrations
+
+Treasury events could trigger notifications through:
+
+Webhooks
+Email
+Telegram
+Discord
+Slack
+Mobile notifications
+
+Example:
+
+Large Withdrawal
+       │
+       ▼
+TreasuryKit Event
+       │
+       ▼
+Monitoring Service
+       │
+       ├── Email
+       ├── Telegram
+       └── Discord
+8. Multi-Treasury Management
+
+Organizations could manage multiple treasuries from one application.
+
+Organization
+     │
+     ├── Operations Treasury
+     ├── Payroll Treasury
+     ├── Grant Treasury
+     └── Community Treasury
+9. Cross-Application Treasury Standards
+
+A long-term goal is to make TreasuryKit easier for different Stellar applications to integrate.
+
+For example:
+
+Application A
+      │
+      ├──────┐
+             ▼
+Application B → TreasuryKit
+             ▲
+      ┌──────┘
+      │
+Application C
+
+The objective is to provide reusable infrastructure rather than forcing developers to adopt a specific frontend or application architecture.
+
+10. Treasury Adapters
+
+Future versions could provide adapters for common application patterns.
+
+Potential adapters:
+
+DAOAdapter
+GrantAdapter
+PayrollAdapter
+CreatorAdapter
+AIAgentAdapter
+PaymentAdapter
+
+These adapters would sit above the core TreasuryKit contract.
+
+11. Developer Dashboard
+
+A future optional dashboard could allow developers to:
+
+Create a treasury
+Configure permissions
+Configure spending limits
+Manage recipients
+View transactions
+Monitor events
+Manage proposals
+Inspect treasury health
+
+The dashboard would be an optional interface, not a requirement for using the SDK.
+
+12. Security Audit Support
+
+As the project matures, TreasuryKit should pursue independent security review before encouraging production use with significant funds.
+
+The Stellar ecosystem provides security resources for eligible Soroban projects, including the Soroban Audit Bank for qualifying SCF-funded projects.
+
+🌍 Why Stellar TreasuryKit?
+
+Treasury infrastructure is a foundational component for many blockchain applications.
+
+Instead of creating another application that only solves one treasury use case, TreasuryKit focuses on reusable infrastructure.
+
+                         TreasuryKit
+                              │
+       ┌──────────────────────┼──────────────────────┐
+       │                      │                      │
+       ▼                      ▼                      ▼
+      DAOs                 AI Agents             Payments
+       │                      │                      │
+       ▼                      ▼                      ▼
+    Grants                Automation             Payroll
+       │                      │                      │
+       └──────────────────────┼──────────────────────┘
+                              │
+                              ▼
+                           Stellar
+
+This makes the project useful across multiple categories of Stellar applications.
+
+🤝 Contributing
+
+Contributions are welcome.
+
+Possible contribution areas include:
+
+Soroban contract development
+Rust testing
+TypeScript SDK
+Documentation
+Examples
+Developer tooling
+Security testing
+Analytics integrations
+AI integrations
+
+Please read:
+
+CONTRIBUTING.md
+
+before opening a pull request.
+
+🔐 Security
+
+TreasuryKit deals with financial infrastructure.
+
+Do not use the project with production funds until the relevant contracts have been thoroughly tested and independently reviewed.
+
+If you discover a security vulnerability, please follow the instructions in:
+
+SECURITY.md
+
+Do not publicly disclose exploitable vulnerabilities before they have been responsibly reported and addressed.
 
 📜 License
 
-MIT
+This project is released under the Apache License 2.0.
+
+See:
+
+LICENSE
+
+for the complete license.
+
+⭐ Project Vision
+
+Make secure, programmable treasury infrastructure a reusable building block for the Stellar ecosystem.
+
+TreasuryKit is not intended to be another standalone treasury dashboard.
+
+It is intended to become a developer building block that applications can use to safely manage funds, permissions, limits, approvals, and treasury workflows on Stellar.
+
+🚀 Future Vision
+
+The long-term vision is:
+
+                  Stellar TreasuryKit
+                          │
+             ┌────────────┼────────────┐
+             │            │            │
+             ▼            ▼            ▼
+          Contracts       SDK       Standards
+             │            │            │
+             └────────────┼────────────┘
+                          │
+                          ▼
+                  Stellar Applications
+                          │
+       ┌──────────┬───────┼────────┬──────────┐
+       ▼          ▼       ▼        ▼          ▼
+      DAO       AI Agent Grants  Payroll   Payments
+
+Build once. Secure the rules on-chain. Let many Stellar applications use the infrastructure.
