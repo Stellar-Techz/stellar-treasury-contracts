@@ -733,3 +733,36 @@ Stellar
 Execute
 
 The AI is therefore connected to real programmable financial infrastructure.
+
+Future Development
+
+Future versions could support:
+
+Multi-signature treasury management
+DAO treasury management
+Business payroll
+Recurring payments
+Multi-wallet treasury
+Telegram/Discord notifications
+Advanced treasury risk scoring
+Treasury forecasting
+Automated invoice payments
+AI-generated financial reports
+Cross-border business payments
+Multi-asset treasury management
+DeFi strategy recommendations
+⚠️ Security
+
+The system follows the principle of least privilege.
+
+The AI agent should never receive unrestricted control over treasury funds.
+
+Automated actions should always be constrained by Soroban smart-contract permissions and spending limits.
+
+The contract should be thoroughly tested and audited before handling significant real funds.
+
+For hackathon purposes, the application should initially use Stellar testnet assets.
+
+📜 License
+
+MIT
